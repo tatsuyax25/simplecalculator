@@ -61,3 +61,7 @@ button:hover {
   background-color: #f5923e;
   color: #fff;
 }
+
+.operator:hover {
+  background-color: #d17d31;
+}
