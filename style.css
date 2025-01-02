@@ -7,3 +7,13 @@ body {
   height: 100vh;
   background-color: #f5f5f5;
 }
+
+/* Styling for the calculator container */
+.calculator {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 400px;
+  height: 600px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
