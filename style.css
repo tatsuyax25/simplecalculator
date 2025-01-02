@@ -50,3 +50,8 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+
+/* Hover effect for buttons */
+button:hover {
+  background-color: #f1f1f1;
+}
