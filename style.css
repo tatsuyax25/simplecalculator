@@ -31,3 +31,22 @@ body {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
+
+/* Grid layout for the calculator keys */
+.calculator-keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 20px;
+}
+
+/* Basic styling for all buttons */
+button {
+  height: 100px;
+  font-size: 2rem;
+  border: none;
+  border-radius: 5px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
