@@ -1,0 +1,9 @@
+/* Basic styling for the body to center the calculator */
+body {
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
