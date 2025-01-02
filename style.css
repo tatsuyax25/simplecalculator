@@ -65,3 +65,24 @@ button:hover {
 .operator:hover {
   background-color: #d17d31;
 }
+
+/* Specific styling for the equal sign button */
+.equal-sign {
+  background-color: #61c9a8;
+  color: #fff;
+  grid-column: span 4;
+}
+
+.equal-sign:hover {
+  background-color: #4f9f88;
+}
+
+/* Specific styling for the clear button */
+.all-clear {
+  background-color: #9a9a9a;
+  color: #fff;
+}
+
+.all-clear:hover {
+  background-color: #7a7a7a;
+}
