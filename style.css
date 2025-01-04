@@ -97,3 +97,20 @@ button:active {
 .all-clear:hover {
   background-color: #7a7a7a;
 }
+
+/* Responsive styling for smaller screens */
+@media (max-width: 500px) {
+  .calculator {
+    width: 90%;
+  }
+
+  button {
+    height: 60px;
+    font-size: 1.2rem;
+  }
+
+  .calculator-screen {
+    font-size: 1.5rem;
+    min-height: 60px;
+  }
+}
