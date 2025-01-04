@@ -28,4 +28,16 @@ const calculator = {
 
     this.updateScreen();
   },
+
+  // Handle digit or decimal input
+  inputDigit(digit) {
+    if (this.waitingForSecondOperand) {
+      this.currentValue = digit;
+      this.waitingForSecondOperand = false;
+    } else {
+      this.currentValue = this.currentValue === '0' ? digit : this.currentValue + digit;
+    }
+  },
+
+  
 }
