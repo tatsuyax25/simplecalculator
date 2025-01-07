@@ -69,4 +69,15 @@ const calculator = {
     }
   },
   
+  // Handle the equal sign button
+  calculateResult() {
+    if (this.operator && !this.waitingForSecondOperand) {
+      this.currentValue = `${this.performCalculation(this.firstOperand, parseFloat(this.currentValue), this.operator)}`;
+      this.firstOperand = null;
+      this.operator = null;
+    }
+    this.waitingForSecondOperand = false;
+  },
+
+  
 }
