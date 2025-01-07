@@ -79,5 +79,11 @@ const calculator = {
     this.waitingForSecondOperand = false;
   },
 
-  
-}
+  // Reset the calculator
+  resetCalculator() {
+    this.currentValue = '0';
+    this.firstOperand = null;
+    this.operator = null;
+    this.waitingForSecondOperand = false;
+  }
+};
