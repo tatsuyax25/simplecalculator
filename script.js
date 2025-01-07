@@ -1,27 +1,32 @@
 // Calculator object to manage state and functionality
 const calculator = {
-  screen: document.querySelector('#screen'), // Reference to the calculator screen
-  keys: documents.querySelector('.calculator-keys'), // Reference to calculator buttons
-  operator: null, // Current operator
-  firstOperand: null, // First operand
-  waitingForSecondOperand: false, // Flag to track second operand input
-  currentValue: '0', // Current display value
+  // Reference to the calculator screen (div element)
+  screen: document.querySelector("#screen"),
+  // Reference to the container holding all calculator buttons
+  keys: document.querySelector(".calculator-keys"),
+  // Variables to store the operator, operands, and current value
+  operator: null,
+  firstOperand: null,
+  waitingForSecondOperand: false,
+  currentValue: "0",
 
-  // Update the calculator screen with the current value
+  // Update the calculator screen
   updateScreen() {
-    this.screen.value = this.currentValue;
+    this.screen.textContent = this.currentValue;
   },
 
   // Handle button clicks
   handleKey(button) {
     const { value, classList } = button;
 
-    if (classList.contains('operator')) {
+    if (classList.contains("operator")) {
       this.handleOperator(value);
-    } else if (classList.contains('equal-sign')) {
+    } else if (classList.contains("equal-sign")) {
       this.calculateResult();
-    } else if (classList.contains('all-clear')) {
+    } else if (classList.contains("all-clear")) {
       this.resetCalculator();
+    } else if (classList.contains("decimal")) {
+      this.inputDecimal(value);
     } else {
       this.inputDigit(value);
     }
@@ -35,7 +40,20 @@ const calculator = {
       this.currentValue = digit;
       this.waitingForSecondOperand = false;
     } else {
-      this.currentValue = this.currentValue === '0' ? digit : this.currentValue + digit;
+      this.currentValue =
+        this.currentValue === "0" ? digit : this.currentValue + digit;
+    }
+  },
+
+  inputDecimal(dot) {
+    if (this.waitingForSecondOperand) {
+      this.currentValue = "0.";
+      this.waitingForSecondOperand = false;
+      return;
+    }
+
+    if (!this.currentValue.includes(dot)) {
+      this.currentValue += dot;
     }
   },
 
@@ -43,8 +61,12 @@ const calculator = {
   handleOperator(nextOperator) {
     if (this.firstOperand === null) {
       this.firstOperand = parseFloat(this.currentValue);
-    } else if (this.operator && !this.waitingForSecondOperand) {
-      const result = this.performCalculation(this.firstOperand, parseFloat(this.currentValue), this.operator);
+    } else if (this.operator) {
+      const result = this.performCalculation(
+        this.firstOperand,
+        parseFloat(this.currentValue),
+        this.operator
+      );
       this.currentValue = `${result}`;
       this.firstOperand = result;
     }
@@ -53,26 +75,30 @@ const calculator = {
     this.waitingForSecondOperand = true;
   },
 
-  // Perform calculations based on the operator
+  // Perform the calculation
   performCalculation(firstOperand, secondOperand, operator) {
     switch (operator) {
-      case '+':
+      case "+":
         return firstOperand + secondOperand;
-      case '-':
+      case "-":
         return firstOperand - secondOperand;
-      case '*':
+      case "*":
         return firstOperand * secondOperand;
-      case '/':
-        return secondOperand !== 0 ? firstOperand / secondOperand : 'Error';
+      case "/":
+        return secondOperand !== 0 ? firstOperand / secondOperand : "Error";
       default:
         return secondOperand;
     }
   },
-  
-  // Handle the equal sign button
+
+  // Handle the equal sign
   calculateResult() {
-    if (this.operator && !this.waitingForSecondOperand) {
-      this.currentValue = `${this.performCalculation(this.firstOperand, parseFloat(this.currentValue), this.operator)}`;
+    if (this.operator && this.firstOperand !== null) {
+      this.currentValue = `${this.performCalculation(
+        this.firstOperand,
+        parseFloat(this.currentValue),
+        this.operator
+      )}`;
       this.firstOperand = null;
       this.operator = null;
     }
@@ -81,9 +107,19 @@ const calculator = {
 
   // Reset the calculator
   resetCalculator() {
-    this.currentValue = '0';
+    this.currentValue = "0";
     this.firstOperand = null;
     this.operator = null;
     this.waitingForSecondOperand = false;
-  }
+  },
 };
+
+// Attach event listener to handle button clicks
+calculator.keys.addEventListener("click", (event) => {
+  const { target } = event;
+
+  // Only process clicks on buttons
+  if (!target.matches("button")) return;
+
+  calculator.handleKey(target);
+});
