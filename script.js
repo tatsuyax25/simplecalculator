@@ -52,4 +52,21 @@ const calculator = {
     this.operator = nextOperator;
     this.waitingForSecondOperand = true;
   },
+
+  // Perform calculations based on the operator
+  performCalculation(firstOperand, secondOperand, operator) {
+    switch (operator) {
+      case '+':
+        return firstOperand + secondOperand;
+      case '-':
+        return firstOperand - secondOperand;
+      case '*':
+        return firstOperand * secondOperand;
+      case '/':
+        return secondOperand !== 0 ? firstOperand / secondOperand : 'Error';
+      default:
+        return secondOperand;
+    }
+  },
+  
 }
