@@ -39,5 +39,17 @@ const calculator = {
     }
   },
 
-  
+  // Handle operator input
+  handleOperator(nextOperator) {
+    if (this.firstOperand === null) {
+      this.firstOperand = parseFloat(this.currentValue);
+    } else if (this.operator && !this.waitingForSecondOperand) {
+      const result = this.performCalculation(this.firstOperand, parseFloat(this.currentValue), this.operator);
+      this.currentValue = `${result}`;
+      this.firstOperand = result;
+    }
+
+    this.operator = nextOperator;
+    this.waitingForSecondOperand = true;
+  },
 }
