@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <!-- Link to the CSS file for styling -->
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <!-- Calculator container -->
   <div class="calculator" role="application">
@@ -15,30 +17,26 @@
 
     <!-- Container for calculator buttons -->
     <div class="calculator-keys">
-      <!-- Operator buttons -->
-      <button class="operator" value="+" aria-label="Addition">+</button>
-      <button class="operator" value="-" aria-label="Subtraction">-</button>
-      <button class="operator" value="*" aria-label="Multiplication">&times;</button>
-      <button class="operator" value="/" aria-label="Division">&divide;</button>
-
       <!-- Number buttons -->
       <button value="7" aria-label="7">7</button>
       <button value="8" aria-label="8">8</button>
       <button value="9" aria-label="9">9</button>
-      
+      <button class="operator" value="/" aria-label="Division">&divide;</button>
+
       <button value="4" aria-label="4">4</button>
       <button value="5" aria-label="5">5</button>
       <button value="6" aria-label="6">6</button>
-      
+      <button class="operator" value="*" aria-label="Multiplication">&times;</button>
+
       <button value="1" aria-label="1">1</button>
       <button value="2" aria-label="2">2</button>
       <button value="3" aria-label="3">3</button>
-      
+      <button class="operator" value="-" aria-label="Subtraction">-</button>
+
       <button value="0" aria-label="0">0</button>
       <button class="decimal" value="." aria-label="Decimal">.</button>
-
-      <!-- All clear button -->
       <button class="all-clear" value="all-clear" aria-label="Clear all">AC</button>
+      <button class="operator" value="+" aria-label="Addition">+</button>
 
       <!-- Equal sign button -->
       <button class="equal-sign" value="=" aria-label="Equals">=</button>
@@ -48,4 +46,5 @@
   <!-- Link to the JavaScript file for the calculator functionality -->
   <script src="script.js"></script>
 </body>
+
 </html>
