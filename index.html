@@ -10,10 +10,23 @@
 </head>
 
 <body>
-  <!-- Calculator container -->
+  <!-- Theme toggle button for dark/light mode switching -->
+  <div class="theme-toggle-container">
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+      <span class="theme-icon">🌙</span>
+    </button>
+  </div>
+  
+  <!-- Calculator container with enhanced structure -->
   <div class="calculator" role="application">
-    <!-- Display screen for the calculator -->
-    <div class="calculator-screen" id="screen" role="textbox" aria-readonly="true" title="Calculator Screen">0</div>
+    <!-- Enhanced display screen with animation support -->
+    <div class="calculator-screen-container">
+      <div class="calculator-screen" id="screen" role="textbox" aria-readonly="true" title="Calculator Screen">
+        <span class="screen-text">0</span>
+        <!-- Visual feedback overlay for button presses -->
+        <div class="screen-flash" id="screen-flash"></div>
+      </div>
+    </div>
 
     <!-- Container for calculator buttons -->
     <div class="calculator-keys">

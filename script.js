@@ -25,13 +25,14 @@ const calculator = {
     INVALID: "Invalid operation"
   },
 
-  // Enhanced screen update with number formatting and overflow handling
+  // Enhanced screen update with animations and visual feedback
   updateScreen() {
     let displayValue = this.currentValue;
     
-    // Handle error messages - display as-is
+    // Handle error messages - display as-is with error styling
     if (typeof displayValue === 'string' && displayValue.includes('Cannot')) {
-      this.screen.textContent = displayValue;
+      this.updateScreenText(displayValue);
+      this.addScreenFlash('error'); // Visual feedback for errors
       return;
     }
     
@@ -51,18 +52,55 @@ const calculator = {
       displayValue = numValue.toPrecision(this.MAX_DIGITS);
     }
     
-    this.screen.textContent = displayValue;
+    this.updateScreenText(displayValue);
+  },
+  
+  // NEW: Update screen text with smooth animation
+  updateScreenText(text) {
+    const screenText = this.screen.querySelector('.screen-text') || this.screen;
+    
+    // Add fade animation for smooth text changes
+    screenText.style.opacity = '0.7';
+    
+    setTimeout(() => {
+      screenText.textContent = text;
+      screenText.style.opacity = '1';
+    }, 100);
+  },
+  
+  // NEW: Add visual flash effect to screen
+  addScreenFlash(type = 'normal') {
+    const flash = document.getElementById('screen-flash');
+    if (!flash) return;
+    
+    // Different flash colors for different actions
+    if (type === 'error') {
+      flash.style.background = 'rgba(255, 0, 0, 0.2)';
+    } else if (type === 'result') {
+      flash.style.background = 'rgba(0, 255, 0, 0.2)';
+    } else {
+      flash.style.background = 'rgba(255, 255, 255, 0.1)';
+    }
+    
+    flash.classList.add('active');
+    setTimeout(() => flash.classList.remove('active'), 150);
   },
 
-  // Enhanced button click handler with support for new functions
+  // Enhanced button click handler with visual and audio feedback
   handleKey(button) {
     const { value, classList } = button;
+    
+    // Add visual feedback effects
+    this.addButtonRipple(button);
+    this.playClickSound(classList);
+    this.addScreenFlash();
 
     // Handle different button types
     if (classList.contains("operator")) {
       this.handleOperator(value);
     } else if (classList.contains("equal-sign")) {
       this.calculateResult();
+      this.addScreenFlash('result'); // Special flash for results
     } else if (classList.contains("all-clear")) {
       this.resetCalculator();
     } else if (classList.contains("decimal")) {
@@ -76,6 +114,74 @@ const calculator = {
     }
 
     this.updateScreen();
+  },
+  
+  // NEW: Add ripple effect to buttons for modern touch feedback
+  addButtonRipple(button) {
+    // Don't add ripple if reduced motion is preferred
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+    
+    button.classList.add('ripple');
+    
+    // Remove ripple class after animation
+    setTimeout(() => {
+      button.classList.remove('ripple');
+    }, 300);
+  },
+  
+  // NEW: Play different sounds for different button types
+  playClickSound(classList) {
+    // Only play sounds if user hasn't disabled them
+    if (this.soundEnabled === false) return;
+    
+    try {
+      // Create audio context for Web Audio API (more reliable than HTML5 audio)
+      if (!this.audioContext) {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      
+      // Different frequencies for different button types
+      let frequency = 800; // Default frequency
+      
+      if (classList.contains('operator')) {
+        frequency = 600; // Lower tone for operators
+      } else if (classList.contains('equal-sign')) {
+        frequency = 1000; // Higher tone for equals
+      } else if (classList.contains('all-clear')) {
+        frequency = 400; // Lowest tone for clear
+      } else if (classList.contains('memory')) {
+        frequency = 700; // Medium tone for memory functions
+      }
+      
+      // Generate and play the sound
+      this.generateBeep(frequency, 0.1, 0.05); // frequency, duration, volume
+      
+    } catch (error) {
+      // Silently fail if audio is not supported
+      console.log('Audio not supported:', error);
+      this.soundEnabled = false;
+    }
+  },
+  
+  // NEW: Generate beep sound using Web Audio API
+  generateBeep(frequency, duration, volume) {
+    const oscillator = this.audioContext.createOscillator();
+    const gainNode = this.audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(this.audioContext.destination);
+    
+    oscillator.frequency.value = frequency;
+    oscillator.type = 'sine'; // Smooth sine wave
+    
+    gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration);
+    
+    oscillator.start(this.audioContext.currentTime);
+    oscillator.stop(this.audioContext.currentTime + duration);
   },
 
   // Enhanced digit input with overflow protection
@@ -215,10 +321,13 @@ const calculator = {
     this.waitingForSecondOperand = false;
   },
 
-  // Enhanced calculator reset
+  // Enhanced calculator reset with visual feedback
   resetCalculator() {
     this.currentValue = "0";
     this.resetCalculatorState();
+    
+    // Add visual feedback for reset action
+    this.addScreenFlash();
   },
   
   // Reset calculation state (used internally)
@@ -312,6 +421,81 @@ const calculator = {
   isError(value) {
     return typeof value === 'string' && 
            (value.includes('Cannot') || value.includes('too large') || value.includes('Invalid'));
+  },
+  
+  // NEW: Initialize UI preferences and settings
+  initializeUI() {
+    // Load saved theme preference
+    const savedTheme = localStorage.getItem('calculator-theme');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+      this.updateThemeIcon(true);
+    }
+    
+    // Load sound preference (default: enabled)
+    this.soundEnabled = localStorage.getItem('calculator-sound') !== 'false';
+    
+    // Initialize audio context on first user interaction (required by browsers)
+    this.audioContext = null;
+    
+    // Set up theme toggle functionality
+    this.setupThemeToggle();
+    
+    // Initialize screen with proper structure
+    this.initializeScreen();
+  },
+  
+  // NEW: Set up theme toggle button functionality
+  setupThemeToggle() {
+    const themeToggle = document.getElementById('theme-toggle');
+    if (!themeToggle) return;
+    
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark-theme');
+      
+      // Save preference
+      localStorage.setItem('calculator-theme', isDark ? 'dark' : 'light');
+      
+      // Update icon
+      this.updateThemeIcon(isDark);
+      
+      // Add visual feedback
+      this.addButtonRipple(themeToggle);
+      
+      // Play sound feedback
+      if (this.soundEnabled) {
+        this.generateBeep(500, 0.1, 0.03);
+      }
+    });
+  },
+  
+  // NEW: Update theme toggle icon
+  updateThemeIcon(isDark) {
+    const icon = document.querySelector('.theme-icon');
+    if (icon) {
+      icon.textContent = isDark ? '☀️' : '🌙';
+    }
+  },
+  
+  // NEW: Initialize screen structure for animations
+  initializeScreen() {
+    const screen = this.screen;
+    if (!screen.querySelector('.screen-text')) {
+      const currentText = screen.textContent;
+      screen.innerHTML = `<span class="screen-text">${currentText}</span>`;
+    }
+  },
+  
+  // NEW: Toggle sound on/off (can be called from console)
+  toggleSound() {
+    this.soundEnabled = !this.soundEnabled;
+    localStorage.setItem('calculator-sound', this.soundEnabled.toString());
+    console.log(`Sound ${this.soundEnabled ? 'enabled' : 'disabled'}`);
+    
+    // Play confirmation sound if enabling
+    if (this.soundEnabled) {
+      setTimeout(() => this.generateBeep(800, 0.2, 0.05), 100);
+    }
   },
 };
 
@@ -416,11 +600,24 @@ document.addEventListener("keydown", (event) => {
   calculator.handleKey(virtualButton);
 });
 
-// Initialize calculator display
-calculator.updateScreen();
+// Initialize calculator with enhanced UI features
+document.addEventListener('DOMContentLoaded', () => {
+  calculator.initializeUI();
+  calculator.updateScreen();
+});
 
-// Utility function to display current history (for debugging)
-// You can call this in browser console: calculator.showHistory()
+// Initialize immediately if DOM is already loaded
+if (document.readyState === 'loading') {
+  // DOM is still loading, wait for DOMContentLoaded
+} else {
+  // DOM is already loaded
+  calculator.initializeUI();
+  calculator.updateScreen();
+}
+
+// Enhanced utility functions for debugging and user control
+
+// Display calculation history (call in browser console)
 calculator.showHistory = function() {
   console.log('=== Calculator History ===');
   if (this.history.length === 0) {
@@ -432,4 +629,35 @@ calculator.showHistory = function() {
     console.log(`${index + 1}. ${calc.expression} = ${calc.result} (${calc.timestamp})`);
   });
   console.log(`Memory: ${this.memory}`);
+  console.log(`Theme: ${document.body.classList.contains('dark-theme') ? 'Dark' : 'Light'}`);
+  console.log(`Sound: ${this.soundEnabled ? 'Enabled' : 'Disabled'}`);
 };
+
+// Quick access functions for users (call in browser console)
+calculator.enableDarkMode = () => {
+  document.body.classList.add('dark-theme');
+  localStorage.setItem('calculator-theme', 'dark');
+  calculator.updateThemeIcon(true);
+  console.log('Dark mode enabled');
+};
+
+calculator.enableLightMode = () => {
+  document.body.classList.remove('dark-theme');
+  localStorage.setItem('calculator-theme', 'light');
+  calculator.updateThemeIcon(false);
+  console.log('Light mode enabled');
+};
+
+// Keyboard shortcut for theme toggle (Ctrl/Cmd + T)
+document.addEventListener('keydown', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key === 't') {
+    event.preventDefault();
+    document.getElementById('theme-toggle')?.click();
+  }
+  
+  // Keyboard shortcut for sound toggle (Ctrl/Cmd + S)
+  if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+    event.preventDefault();
+    calculator.toggleSound();
+  }
+});
