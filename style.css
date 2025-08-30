@@ -33,7 +33,7 @@ body {
   justify-content: flex-end;
 }
 
-/* Grid layout for the calculator keys */
+/* Grid layout for the calculator keys - updated for 5 rows */
 .calculator-keys {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -96,6 +96,28 @@ button:active {
 
 .all-clear:hover {
   background-color: #7a7a7a;
+}
+
+/* Styling for memory function buttons */
+.memory {
+  background-color: #6c5ce7;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.memory:hover {
+  background-color: #5a4fcf;
+}
+
+/* Styling for backspace button */
+.backspace {
+  background-color: #e17055;
+  color: #fff;
+  font-size: 1.8rem;
+}
+
+.backspace:hover {
+  background-color: #c0392b;
 }
 
 /* Responsive styling for smaller screens */
