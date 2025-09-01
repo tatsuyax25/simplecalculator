@@ -9,6 +9,7 @@ const calculator = {
   firstOperand: null,
   waitingForSecondOperand: false,
   currentValue: "0",
+  justCalculated: false, // NEW: Track if we just completed a calculation
   
   // Memory functionality - stores a number for later recall
   memory: 0,
@@ -184,11 +185,19 @@ const calculator = {
     oscillator.stop(this.audioContext.currentTime + duration);
   },
 
-  // Enhanced digit input with overflow protection
+  // Enhanced digit input with overflow protection and post-calculation clearing
   inputDigit(digit) {
     // Clear error messages when starting new input
     if (this.isError(this.currentValue)) {
       this.currentValue = "0";
+    }
+    
+    // NEW: If we just calculated a result, start fresh with new digit
+    if (this.justCalculated) {
+      this.currentValue = digit;
+      this.justCalculated = false;
+      this.resetCalculatorState(); // Clear previous operation state
+      return;
     }
     
     if (this.waitingForSecondOperand) {
@@ -205,11 +214,19 @@ const calculator = {
     }
   },
 
-  // Enhanced decimal input with validation
+  // Enhanced decimal input with validation and post-calculation clearing
   inputDecimal(dot) {
     // Clear error messages when starting new input
     if (this.isError(this.currentValue)) {
       this.currentValue = "0";
+    }
+    
+    // NEW: If we just calculated a result, start fresh with "0."
+    if (this.justCalculated) {
+      this.currentValue = "0.";
+      this.justCalculated = false;
+      this.resetCalculatorState(); // Clear previous operation state
+      return;
     }
     
     if (this.waitingForSecondOperand) {
@@ -224,7 +241,7 @@ const calculator = {
     }
   },
 
-  // Enhanced operator handling with error checking
+  // Enhanced operator handling with error checking and post-calculation state
   handleOperator(nextOperator) {
     // Don't process operators if we have an error
     if (this.isError(this.currentValue)) {
@@ -233,7 +250,11 @@ const calculator = {
     
     const inputValue = parseFloat(this.currentValue);
     
-    if (this.firstOperand === null) {
+    // NEW: If we just calculated, use the result as first operand for chaining
+    if (this.justCalculated) {
+      this.firstOperand = inputValue;
+      this.justCalculated = false;
+    } else if (this.firstOperand === null) {
       this.firstOperand = inputValue;
     } else if (this.operator) {
       const result = this.performCalculation(
@@ -299,7 +320,7 @@ const calculator = {
     return result;
   },
 
-  // Enhanced result calculation with history tracking
+  // Enhanced result calculation with history tracking and post-calculation flag
   calculateResult() {
     if (this.operator && this.firstOperand !== null && !this.isError(this.currentValue)) {
       const secondOperand = parseFloat(this.currentValue);
@@ -317,6 +338,7 @@ const calculator = {
       this.currentValue = `${result}`;
       this.firstOperand = null;
       this.operator = null;
+      this.justCalculated = true; // NEW: Mark that we just completed a calculation
     }
     this.waitingForSecondOperand = false;
   },
@@ -335,6 +357,7 @@ const calculator = {
     this.firstOperand = null;
     this.operator = null;
     this.waitingForSecondOperand = false;
+    this.justCalculated = false; // NEW: Clear the post-calculation flag
   },
   
   // NEW FUNCTIONALITY: Backspace - removes last entered digit
