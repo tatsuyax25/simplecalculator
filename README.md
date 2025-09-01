@@ -123,10 +123,10 @@ calculator.enableLightMode()  // Switch to light theme
 ## 🎨 Preview
 
 ### Light Mode
-![Calculator Light Mode](https://imgur.com/dkOEvcQ)
+![Calculator Light Mode](https://i.imgur.com/dkOEvcQ.png)
 
 ### Dark Mode
-![Calculator Dark Mode](https://imgur.com/m2EYNLh)
+![Calculator Dark Mode](https://i.imgur.com/m2EYNLh.png)
 
 ---
 
